@@ -1,7 +1,7 @@
 apply plugin: 'java'
 
 project.ext.lwjglVersion = "3.0.0a"
-sourceCompatibility = 1.7
+sourceCompatibility = 1.8
 
 // Maven Artefacts Info
 group = "com.grillecube"

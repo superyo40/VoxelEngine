@@ -1,11 +1,8 @@
 package com.grillecube.client.network;
 
-import java.util.Date;
-
 import com.grillecube.server.network.packet.PacketString;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;

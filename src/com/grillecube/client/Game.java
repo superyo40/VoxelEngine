@@ -4,6 +4,7 @@ package com.grillecube.client;
 import java.util.ArrayList;
 
 import com.grillecube.client.event.IEvent;
+import com.grillecube.client.lib.SharedLibraryLoader;
 import com.grillecube.client.mod.blocks.ModBlocks;
 import com.grillecube.client.mod.renderer.particles.ModParticles;
 import com.grillecube.client.renderer.MainRenderer;
@@ -52,6 +53,7 @@ public class Game
 	public Game()
 	{
 		_instance = this;
+		SharedLibraryLoader.load();
 		this._logger = new Logger(System.out);
 		this._threads = new ArrayList<Thread>();
 		this._events = new ArrayList[GameEvent.MAX_ID];
