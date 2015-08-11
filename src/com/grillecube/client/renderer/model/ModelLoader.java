@@ -1,136 +1,140 @@
 package com.grillecube.client.renderer.model;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
-import org.lwjgl.util.vector.Vector3f;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.grillecube.common.logger.Logger;
 
 public class ModelLoader
 {
-	private static final float UNIT = 1 / 16.0f;
-	public static Model	loadModel(String filename)
+	/** load a model (from json format) */
+	public static Model	fromJsonFile(String filepath)
 	{
-		FileInputStream	fstream;
-		DataInputStream	dis;
-		Model			model;
-		File			file;
-		
-		filename = "./assets/models/" + filename + ".mdl";
-		Logger.get().log(Logger.Level.DEBUG, "Loading new model: " + filename);
-		file = new File(filename);
+		Logger.get().log(Logger.Level.FINE, "Loading model: " + filepath);
 		try
 		{
-			fstream = new FileInputStream(file);
-			dis = new DataInputStream(fstream);
-			model = new Model(readChars(dis));
-			loadModelParts(dis, model);
-			return (model);
+			return (ModelLoader.fromJsonObject(new JSONObject(readFile(filepath))));
 		}
-		catch (IOException exception)
+		catch (IOException e)
 		{
-			exception.printStackTrace();
+			e.printStackTrace();
+			return (null);
 		}
-		return (null);
-	}
-
-	private static void	loadModelParts(DataInputStream dis, Model model) throws IOException
-	{
-		ArrayList<ModelPart>	parts;
-		int	nb_parts;
-		int	i;
-		
-		nb_parts = dis.readInt();
-		parts = new ArrayList<ModelPart>(nb_parts);
-		for (i = 0 ; i < nb_parts ; i++)
-		{
-			parts.add(i, loadModelPart(dis));
-		}
-		model.setParts(parts);
 	}
 	
-	private static ModelPart	loadModelPart(DataInputStream dis) throws IOException
+	/** load a model frm a json object */
+	public static Model fromJsonObject(JSONObject object)
+	{	
+		try
+		{
+			Model model = new Model(object.getString("name"));
+			JSONArray parts = object.getJSONArray("ModelParts");
+			for (int i = 0 ; i < parts.length() ; i++)
+			{
+				model.addPart(jsonObjectToModelPart(parts.getJSONObject(i)));
+			}
+			return (model);
+		}
+		catch (Exception e)
+		{
+			Logger.get().log(Logger.Level.ERROR, "wrong json file format");
+			e.printStackTrace();
+			return (null);
+		}
+	}
+	
+	private static ModelPart jsonObjectToModelPart(JSONObject object)
 	{
-		ModelPart	part;
-		int			float_count;
-		float[]		vertices;
-		int			i;
+		ModelPart part = null;
 		
-		part = new ModelPart(readChars(dis));
-		float_count = dis.readInt();
-		vertices = new float[float_count];
-		i = 0;
-		while (i < float_count)
+		try 
 		{
-			if (i % 7 < 4)
-			{
-				vertices[i++] = dis.readFloat() * UNIT;	//coordinates
-			}
-			else
-			{
-				vertices[i++] = dis.readFloat();	//color
-			}
+			part = new ModelPart(object.getString("name"));
 		}
-		part.setVertices(vertices);
-		
-		//animations loading
-		Animation[]	animations;
-		int			animation_count;
-		
-		animation_count = dis.readInt();
-		animations = new Animation[animation_count];
-		for (i = 0 ; i < animation_count ; i++)
+		catch (JSONException e)
 		{
-			animations[i] = readAnimation(dis);
+			part = new ModelPart();
 		}
-		part.setAnimations(animations);
+		
+		JSONArray animations = object.getJSONArray("Animations");
+		for (int i = 0 ; i < animations.length() ; i++)
+		{
+			part.addAnimation(jsonObjectToAnimation(animations.getJSONObject(i)));			
+		}
+		
+		JSONArray boxes = object.getJSONArray("BoundingBoxes");
+		for (int i = 0 ; i < boxes.length() ; i++)
+		{
+			part.addBoundingBox(jsonObjectToBoundingBox(boxes.getJSONObject(i)));			
+		}
+		
+		JSONArray vertices = object.getJSONArray("Vertices");
+		part.setVertices(JsonHelper.jsonArrayToFloatArray(vertices));
 		
 		return (part);
 	}
-	
-	private static Animation	readAnimation(DataInputStream dis) throws IOException
+
+	/** return a boundingbox from the given jsonobject */
+	private static BoundingBox jsonObjectToBoundingBox(JSONObject object)
+	{		
+		return (new BoundingBox(JsonHelper.getJSONVector3f(object, "center"), JsonHelper.getJSONVector3f(object, "size")));
+	}
+
+	/** return an animation for a json object */
+	private static Animation jsonObjectToAnimation(JSONObject object)
 	{
-		Animation			animation;
-		AnimationFrame[]	frames;
+		Animation animation = null;
+		int id;
+		String name;
 		
-		float			time;
-		Vector3f		translate;
-		Vector3f		rot;
-		Vector3f		scale;
-		Vector3f		offset;
-		int				frames_count;
-		int				i;
-		
-		animation = new Animation(readChars(dis), dis.readInt());
-		frames_count = dis.readInt();
-		frames = new AnimationFrame[frames_count];
-		for (i = 0 ; i < frames_count ; i++)
-		{
-			time = dis.readFloat();
-			translate = new Vector3f(dis.readFloat() * UNIT, dis.readFloat() * UNIT, dis.readFloat() * UNIT);
-			rot = new Vector3f(dis.readFloat(), dis.readFloat(), dis.readFloat());
-			scale = new Vector3f(dis.readFloat(), dis.readFloat(), dis.readFloat());
-			offset = new Vector3f(dis.readFloat() * UNIT, dis.readFloat() * UNIT, dis.readFloat() * UNIT);
-			frames[i] = new AnimationFrame(time, translate, rot, scale, offset);
+		try {
+			id = object.getInt("id");
+		} catch (JSONException exception) {
+			Logger.get().log(Logger.Level.ERROR, "Missing animation id!");
+			return (null);
 		}
-		animation.setFrames(frames);
+		
+		try {
+			name = object.getString("name");
+		} catch (JSONException exception) {
+			Logger.get().log(Logger.Level.WARNING, "Missing animation name!");
+			name = "undefined";
+		}
+		animation = new Animation(name, id);
+		
+		JSONArray frames = object.getJSONArray("AnimationFrames");
+		for (int i = 0 ; i < frames.length() ; i++)
+		{
+			animation.addFrame(jsonObjectToAnimationFrame(frames.getJSONObject(i)));
+		}
+
 		return (animation);
 	}
-	
-	private static String	readChars(DataInputStream dis) throws IOException
+
+    		
+	/** return an animation frame from a json object */
+	private static AnimationFrame jsonObjectToAnimationFrame(JSONObject object)
 	{
-		String	name;
-		byte	buffer[];
-		int		namelen;
-		
-		namelen = dis.readInt();
-		buffer = new byte[namelen];
-		dis.readFully(buffer, 0, namelen);
-		name = new String(buffer);
-		return (name);
+		return (new AnimationFrame(
+				JsonHelper.jsonObjectToFloat(object.get("time")),
+				JsonHelper.getJSONVector3f(object, "translate"),
+				JsonHelper.getJSONVector3f(object, "rotate"),
+				JsonHelper.getJSONVector3f(object, "scale"),
+				JsonHelper.getJSONVector3f(object, "offset")));
+	}
+	
+
+	/** return a String which contains the full file bytes 
+	 * @throws IOException */
+	private static String readFile(String filepath) throws IOException
+	{
+		byte[] encoded = Files.readAllBytes(Paths.get(filepath));
+		return (new String(encoded, StandardCharsets.UTF_8));
 	}
 }

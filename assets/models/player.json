@@ -1,0 +1,75 @@
+{
+  "_comment1": "- Main model object.",
+  "_comment2": "Every dimension are relative to 1 which is a 'block unit size' in-game",
+  "_comment3": "- For Game engine, only 'Vertices' part is intesting. It contains every vertices formatted",
+  "_comment4": "This is an array of float, formatted like this: 'x, y, z, r, g, b, a' for GL_QUADS",
+  "_comment5": "'x, y, z' are world coordinates, and 'r, g, b, a' colors",
+  "_comment6": "This model is a red quad",
+
+  
+  "name": "Player",
+  
+  "ModelParts": [
+      {
+        "name": "Left leg",
+        "Animations": [
+            {
+              "name": "run",
+              "id": 42,
+                
+              "AnimationFrames": [
+                
+                  {
+                    "time": 0,
+                    "translate": [0, 0, 0],
+                    "rotate": [0, 0, 0],
+                    "scale": [1, 1, 1],
+                    "offset": [0, 0, 0]
+                  },
+                  
+                  {
+                    "time": 1,
+                    "translate": [0, 0, 0],
+                    "rotate": [0, 0, 0],
+                    "scale": [8, 8, 8],
+                    "offset": [0, 0, 0]
+                  },
+                  
+                  {
+                    "time": 2,
+                    "translate": [0, 0, 0],
+                    "rotate": [0, 0, 0],
+                    "scale": [1, 1, 1],
+                    "offset": [0, 0, 0]
+                  }
+                ]
+            }
+        ],
+        
+        "BoundingBoxes": [
+          {
+            "center": [0, 0, 0],
+            "size": [1, 1, 1]
+          },
+          
+          {
+            "center": [0, 0, 0],
+            "size": [2, 0.5, 0.5]
+          }
+        ],
+        
+        "Vertices": [
+            0, 1, 0, 1, 0, 0, 1,
+            0, 0, 0, 1, 0, 0, 1,
+            1, 0, 0, 1, 0, 0, 1,
+            1, 1, 0, 1, 0, 0, 1
+          ],
+          
+        "Cubes": [
+            0, 0, 0, 255, 0, 0, 1,
+            1, 0, 0, 255, 0, 0, 1,
+            2, 0, 0, 255, 0, 0, 1
+        ]
+      }
+    ]
+}

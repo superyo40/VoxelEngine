@@ -21,14 +21,13 @@ public class Logger
 	private static final DateFormat	_date_format	= new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	private static final Calendar	_calendar		= Calendar.getInstance();
 
-	private static Logger _instance;
+	private static Logger _sysout = new Logger(System.out);
 
 	private PrintStream	_print_stream;
 	
 	public Logger(PrintStream stream)
 	{
 		this._print_stream = stream;
-		_instance = this;
 	}
 	
 	public PrintStream	getPrintStream()
@@ -58,7 +57,7 @@ public class Logger
 	
 	public static Logger get()
 	{
-		return (_instance);
+		return (_sysout);
 	}
 
 	public enum Level

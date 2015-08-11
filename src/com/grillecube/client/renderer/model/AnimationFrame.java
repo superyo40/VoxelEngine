@@ -15,11 +15,11 @@ import org.lwjgl.util.vector.Vector3f;
  */
 public class AnimationFrame
 {
-	private float		_time;
-	private Vector3f	_rotation;
-	private Vector3f	_scale;
-	private Vector3f	_translate;
-	private Vector3f	_offset;
+	private float _time;
+	private Vector3f _rotation;
+	private Vector3f _scale;
+	private Vector3f _translate;
+	private Vector3f _offset;
 	
 	public AnimationFrame(float t, Vector3f translate, Vector3f rotation, Vector3f scale, Vector3f offset)
 	{

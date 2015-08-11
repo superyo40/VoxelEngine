@@ -24,9 +24,6 @@ public class Game
 	/** Mod loaded */
 	private ModLoader _mod_loader;
 	
-	/** Logger */
-	private Logger _logger;
-	
 	/** Game window */
 	private GLWindow _window;
 	
@@ -54,7 +51,6 @@ public class Game
 	{
 		_instance = this;
 		SharedLibraryLoader.load();
-		this._logger = new Logger(System.out);
 		this._threads = new ArrayList<Thread>();
 		this._events = new ArrayList[GameEvent.MAX_ID];
 		for (int i = 0 ; i < GameEvent.MAX_ID ; i++)
@@ -77,7 +73,7 @@ public class Game
 		
 		this.invokeEvents(GameEvent.PRE_START);
 		
-		this._logger.log(Level.FINE, "Starting game...");
+		Logger.get().log(Level.FINE, "Starting game...");
 		
 		this._window.start();
 		this._mod_loader.initializeAll(this);
@@ -85,7 +81,7 @@ public class Game
 		this._resources.start();
 		this._world_manager.start();
 		
-		this._logger.log(Level.FINE, "Game started!");
+		Logger.get().log(Level.FINE, "Game started!");
 		
 		this.invokeEvents(GameEvent.POST_START);		
 	}
@@ -149,7 +145,7 @@ public class Game
 	/** stop the game properly */
 	private void stopAll()
 	{
-		this._logger.log(Level.FINE, "Stopping game...");
+		Logger.get().log(Level.FINE, "Stopping game...");
 
 		this._state.unset(GameState.RUNNING);
 
@@ -168,7 +164,7 @@ public class Game
 		this._mod_loader.deinitializeAll(this);
 		this._window.stop();
 		this._renderer.stop();
-		this._logger.log(Level.FINE, "Stopped");
+		Logger.get().log(Level.FINE, "Stopped");
 		
 		this.invokeEvents(GameEvent.STOP);
 	}

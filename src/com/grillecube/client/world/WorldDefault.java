@@ -1,5 +1,10 @@
 package com.grillecube.client.world;
 
+import org.lwjgl.util.vector.Vector3f;
+
+import com.grillecube.client.renderer.model.Models;
+import com.grillecube.client.world.entity.EntityModeled;
+
 public class WorldDefault extends World
 {
 	@Override
@@ -20,6 +25,13 @@ public class WorldDefault extends World
 					this.spawnTerrain(new Terrain(new TerrainLocation(x, y, z)));
 				}
 			}
-		}	
+		}
+		
+		this.spawnEntity(new EntityModeled(Models.getModel(Models.PLAYER))
+				{
+					@Override
+					protected void updateEntity() {}
+			
+				}, new Vector3f(-4, 0, 0));
 	}
 }

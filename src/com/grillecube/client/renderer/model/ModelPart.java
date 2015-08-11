@@ -1,5 +1,7 @@
 package com.grillecube.client.renderer.model;
 
+import java.util.ArrayList;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
@@ -11,7 +13,7 @@ import com.grillecube.common.logger.Logger;
 public class ModelPart
 {
 	/** model part name */
-	private String	_name;
+	private String _name;
 	
 	/** opengl */
 	private VertexArray _vao;
@@ -19,24 +21,27 @@ public class ModelPart
 	private int	_vertex_count;
 
 	/** animations */
-	private Animation[]	_animations;
+	private ArrayList<Animation> _animations;
+	private ArrayList<BoundingBox> _boxes;
 	
 	/** model part state */
-	private static final int STATE_ININITIALIZED	= 1;
+	private static final int STATE_ININITIALIZED = 1;
 	private int	_state;
 
 	public ModelPart()
 	{
-		this._state = 0;
-		this._vao = null;
-		this._vbo = null;
-		this._vertex_count = 0;
-		this._animations = null;
+		this("unknown");
 	}
 	
 	public ModelPart(String name)
 	{
 		this._name = name;
+		this._state = 0;
+		this._vao = null;
+		this._vbo = null;
+		this._vertex_count = 0;
+		this._animations = new ArrayList<Animation>();
+		this._boxes = new ArrayList<BoundingBox>();
 	}
 
 	/** initalize opengl vao / vbo */
@@ -78,14 +83,8 @@ public class ModelPart
 		this.setState(STATE_ININITIALIZED);
 	}
 	
-	/** set animations for this modelpart */
-	public void	setAnimations(Animation[] animations)
-	{
-		this._animations = animations;
-	}
-	
 	/** return animations for this modelpart */
-	public Animation[]	getAnimations()
+	public ArrayList<Animation> getAnimations()
 	{
 		return (this._animations);
 	}
@@ -93,11 +92,11 @@ public class ModelPart
 	/** return the animation at index i */
 	public Animation getAnimationAt(int i)
 	{
-		if (i < 0 || i >= this._animations.length)
+		if (i < 0 || i >= this._animations.size())
 		{
 			return (null);
 		}
-		return (this._animations[i]);
+		return (this._animations.get(i));
 	}
 	
 	/** return the animation with the given id */
@@ -111,6 +110,18 @@ public class ModelPart
 			}
 		}
 		return (null);
+	}
+	
+	/** add an animation to the modelpart */
+	public void addAnimation(Animation animation)
+	{
+		this._animations.add(animation);
+	}
+	
+	/** add a bounding box to this model part */
+	public void addBoundingBox(BoundingBox box)
+	{
+		this._boxes.add(box);
 	}
 	
 	/** set a state */

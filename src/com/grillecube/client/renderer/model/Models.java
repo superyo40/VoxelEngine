@@ -7,7 +7,7 @@ public class Models
 	private static Model[] _models = null;
 	
 	/** every models ID */
-	public static final int	PIG	= 0;
+	public static final int	PLAYER	= 0;
 	
 	private static final int MAX_ID = 1;
 	
@@ -15,7 +15,7 @@ public class Models
 	public static void	initializeModels()
 	{
 		_models = new Model[MAX_ID];
-		_models[PIG] = ModelLoader.loadModel("pig");
+		_models[PLAYER] = ModelLoader.fromJsonFile("./assets/models/player.json");
 	}
 	
 	/** return the model with the given ID */

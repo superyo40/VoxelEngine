@@ -34,6 +34,8 @@ package org.lwjgl.util.vector;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
+import com.grillecube.client.renderer.model.BoundingBox;
+
 /**
  *
  * Holds a 3-tuple vector.
@@ -384,5 +386,10 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f, 
 		float dz = a.getZ() - b.getZ();
 		
 		return (dx * dx + dy * dy + dz * dz);
+	}
+	
+	public boolean isInBoundingBox(Vector3f point, BoundingBox box)
+	{
+		return (box.isPointInside(point));
 	}
 }

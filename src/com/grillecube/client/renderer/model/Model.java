@@ -13,6 +13,7 @@ public class Model
 	public Model(String name)
 	{
 		this._name = name;
+		this._parts = new ArrayList<ModelPart>(1);
 	}
 	
 	/** return model parts */
@@ -33,10 +34,10 @@ public class Model
 		this._name = str;
 	}
 	
-	/** set model name */
-	public void	setParts(ArrayList<ModelPart> parts)
+	/** set a model part to this model */
+	public void	addPart(ModelPart part)
 	{
-		this._parts = parts;
+		this._parts.add(part);
 	}
 
 	public ModelPart getPartAt(int i)
